@@ -1,9 +1,11 @@
-import RoomScene from "./components/RoomScene";
+import CatScene from "./components/CatScene";
+import RoomTour from "./components/RoomTour";
 
 export default function Page() {
   return (
-    <main style={{ height: "100vh" }}>
-      <RoomScene />
-    </main>
+<main style={{ height: "80vh" }}>
+    {/* <CatScene /> */}
+    <RoomTour />
+</main>
   );
 }
