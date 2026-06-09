@@ -16,16 +16,17 @@ type ModalData = {
 };
 
 const MODELS = [
+    {
+    name: "Druid",
+    path: "/models/eduardo_the_druid.glb",
+    scale: 0.01,
+  },
   {
     name: "Cat",
     path: "/models/white_mesh.glb",
     scale: 5,
   },
-  {
-    name: "Dog",
-    path: "/models/eduardo_the_druid.glb",
-    scale: 0.01,
-  },
+
 
 ];
 
@@ -158,12 +159,13 @@ export default function CatScene() {
         </Stage>
 
         {/* Hotspots */}
-        <Hotspot
-          position={[3, 1, 0]}
-          title="Nose"
-          description="This is the cat's nose. It has a keen sense of smell, which helps it navigate and find food."
-          onOpen={setModal}
-        />
+{  selectedModel.path === '/models/white_mesh.glb' && (
+        <> <Hotspot
+            position={[3, 1, 0]}
+            title="Nose"
+            description="This is the cat's nose. It has a keen sense of smell, which helps it navigate and find food."
+            onOpen={setModal}
+          />
 
         <Hotspot
           position={[-3, 1, 1]}
@@ -178,6 +180,9 @@ export default function CatScene() {
           description="This is the cat's ear. It helps the cat detect sounds and maintain balance."
           onOpen={setModal}
         />
+        </> 
+      
+      )}
 
         <OrbitControls enableZoom />
       </Canvas>
