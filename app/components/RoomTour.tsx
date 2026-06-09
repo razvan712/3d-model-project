@@ -137,6 +137,7 @@ function InfoHotspot({
 }
 
 function Room() {
+
   return (
     <>
       {/* Floor */}
@@ -191,6 +192,38 @@ export default function RoomTour() {
     VIEWPOINTS[0]
   );
 
+  const applyViewpoint = (view: Viewpoint) => {
+    setCurrentView(view);
+    setSettings((prev) => ({
+      ...prev,
+      cameraX: view.position[0],
+      cameraY: view.position[1],
+      cameraZ: view.position[2],
+      lookX: view.lookAt[0],
+      lookY: view.lookAt[1],
+      lookZ: view.lookAt[2],
+    }));
+  };
+
+      const [settings, setSettings] = useState({
+  cameraX: 0,
+  cameraY: 1.7,
+  cameraZ: 8,
+
+  lookX: 0,
+  lookY: 1.5,
+  lookZ: 0,
+
+  ambientIntensity: 0.7,
+
+  lightIntensity: 2,
+  lightX: 5,
+  lightY: 10,
+  lightZ: 5,
+});
+
+const [showDebug, setShowDebug] = useState(true);
+
   return (
     <>
       <Canvas
@@ -204,15 +237,33 @@ export default function RoomTour() {
           height: "100vh",
         }}
       >
-        <ambientLight intensity={0.7} />
+   <ambientLight intensity={settings.ambientIntensity} />
 
-        <directionalLight
-          position={[5, 10, 5]}
-          intensity={2}
-          castShadow
-        />
+  <directionalLight
+  position={[
+    settings.lightX,
+    settings.lightY,
+    settings.lightZ,
+  ]}
+  intensity={settings.lightIntensity}
+  castShadow
+/>
 
-        <CameraRig target={currentView} />
+       <CameraRig
+  target={{
+    name: "Custom",
+    position: [
+      settings.cameraX,
+      settings.cameraY,
+      settings.cameraZ,
+    ],
+    lookAt: [
+      settings.lookX,
+      settings.lookY,
+      settings.lookZ,
+    ],
+  }}
+/>
 
         <Room />
 
@@ -220,19 +271,19 @@ export default function RoomTour() {
         <NavigationHotspot
           position={[0, 0.5, 5]}
           label="Entrance"
-          onClick={() => setCurrentView(VIEWPOINTS[0])}
+          onClick={() => applyViewpoint(VIEWPOINTS[0])}
         />
 
         <NavigationHotspot
           position={[-5, 1.2, 2]}
           label="Bed"
-          onClick={() => setCurrentView(VIEWPOINTS[1])}
+          onClick={() => applyViewpoint(VIEWPOINTS[1])}
         />
 
         <NavigationHotspot
           position={[5, 1.2, 2]}
           label="Desk"
-          onClick={() => setCurrentView(VIEWPOINTS[2])}
+          onClick={() => applyViewpoint(VIEWPOINTS[2])}
         />
 
         {/* Information hotspots */}
@@ -257,6 +308,280 @@ export default function RoomTour() {
           onOpen={setModal}
         />
       </Canvas>
+
+      <button
+  onClick={() => setShowDebug(!showDebug)}
+  style={{
+    position: "fixed",
+    top: 20,
+    right: showDebug ? 340 : 20,
+    zIndex: 100000,
+    width: 40,
+    height: 40,
+    border: "none",
+    borderRadius: 8,
+    background: "#2563eb",
+    color: "white",
+    cursor: "pointer",
+    fontSize: 18,
+    transition: "right 0.3s ease",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+  }}
+>
+  {showDebug ? "→" : "←"}
+</button>
+
+<div
+  style={{
+    position: "fixed",
+    top: 20,
+    right: 20,
+    width: 320,
+    background: "white",
+    color: "black",
+    padding: 16,
+    borderRadius: 12,
+    zIndex: 99999,
+    maxHeight: "90vh",
+    overflow: "auto",
+
+    boxShadow: "0 10px 30px rgba(0,0,0,.2)",
+
+    transform: showDebug
+      ? "translateX(0)"
+      : "translateX(calc(100% + 40px))",
+
+    opacity: showDebug ? 1 : 0.95,
+
+    transition:
+      "transform 0.3s ease, opacity 0.3s ease",
+  }}
+>
+  <h2
+    style={{
+      marginTop: 0,
+      marginBottom: 20,
+    }}
+  >
+    Debug Controls
+  </h2>
+
+
+  <h3>Camera</h3>
+
+  <label>
+    X
+    <input
+      type="range"
+      min="-20"
+      max="20"
+      step="0.1"
+      value={settings.cameraX}
+      onChange={(e) =>
+        setSettings({
+          ...settings,
+          cameraX: Number(e.target.value),
+        })
+      }
+    />
+    {settings.cameraX}
+  </label>
+
+  <label>
+    Y
+    <input
+      type="range"
+      min="0"
+      max="10"
+      step="0.1"
+      value={settings.cameraY}
+      onChange={(e) =>
+        setSettings({
+          ...settings,
+          cameraY: Number(e.target.value),
+        })
+      }
+    />
+    {settings.cameraY}
+  </label>
+
+  <label>
+    Z
+    <input
+      type="range"
+      min="-20"
+      max="20"
+      step="0.1"
+      value={settings.cameraZ}
+      onChange={(e) =>
+        setSettings({
+          ...settings,
+          cameraZ: Number(e.target.value),
+        })
+      }
+    />
+    {settings.cameraZ}
+  </label>
+
+  <hr />
+
+  <h3>Look At</h3>
+
+  <label>
+    X
+    <input
+      type="range"
+      min="-20"
+      max="20"
+      step="0.1"
+      value={settings.lookX}
+      onChange={(e) =>
+        setSettings({
+          ...settings,
+          lookX: Number(e.target.value),
+        })
+      }
+    />
+    {settings.lookX}
+  </label>
+
+  <label>
+    Y
+    <input
+      type="range"
+      min="-20"
+      max="20"
+      step="0.1"
+      value={settings.lookY}
+      onChange={(e) =>
+        setSettings({
+          ...settings,
+          lookY: Number(e.target.value),
+        })
+      }
+    />
+    {settings.lookY}
+  </label>
+
+  <label>
+    Z
+    <input
+      type="range"
+      min="-20"
+      max="20"
+      step="0.1"
+      value={settings.lookZ}
+      onChange={(e) =>
+        setSettings({
+          ...settings,
+          lookZ: Number(e.target.value),
+        })
+      }
+    />
+    {settings.lookZ}
+  </label>
+
+  <hr />
+
+  <h3>Ambient Light</h3>
+
+  <input
+    type="range"
+    min="0"
+    max="5"
+    step="0.1"
+    value={settings.ambientIntensity}
+    onChange={(e) =>
+      setSettings({
+        ...settings,
+        ambientIntensity: Number(e.target.value),
+      })
+    }
+  />
+
+  {settings.ambientIntensity}
+
+  <hr />
+
+  <h3>Directional Light</h3>
+
+  <input
+    type="range"
+    min="0"
+    max="10"
+    step="0.1"
+    value={settings.lightIntensity}
+    onChange={(e) =>
+      setSettings({
+        ...settings,
+        lightIntensity: Number(e.target.value),
+      })
+    }
+  />
+
+  {settings.lightIntensity}
+
+  <hr />
+
+  <h3>Light Position</h3>
+
+  <label>
+    X
+    <input
+      type="range"
+      min="-20"
+      max="20"
+      step="0.1"
+      value={settings.lightX}
+      onChange={(e) =>
+        setSettings({
+          ...settings,
+          lightX: Number(e.target.value),
+        })
+      }
+    />
+    {settings.lightX}
+  </label>
+
+  <label>
+    Y
+    <input
+      type="range"
+      min="-20"
+      max="20"
+      step="0.1"
+      value={settings.lightY}
+      onChange={(e) =>
+        setSettings({
+          ...settings,
+          lightY: Number(e.target.value),
+        })
+      }
+    />
+    {settings.lightY}
+  </label>
+
+  <label>
+    Z
+    <input
+      type="range"
+      min="-20"
+      max="20"
+      step="0.1"
+      value={settings.lightZ}
+      onChange={(e) =>
+        setSettings({
+          ...settings,
+          lightZ: Number(e.target.value),
+        })
+      }
+    />
+    {settings.lightZ}
+  </label>
+
+
+
+</div>
 
       {modal && (
         <div
